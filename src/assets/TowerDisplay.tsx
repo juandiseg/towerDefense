@@ -1,3 +1,5 @@
+import Tower from "./Tower";
+
 class TowerDisplay{
     private tower:Tower
     private x:number

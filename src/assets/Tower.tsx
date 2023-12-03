@@ -1,4 +1,4 @@
-export default class Tower{
+export default abstract class Tower{
     private name:string
     private cost:number
 
@@ -23,6 +23,8 @@ export default class Tower{
         }
         return false
     }
+
+    abstract draw(ctx:any, point:any) : void;
 }
 
 

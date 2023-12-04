@@ -6,11 +6,12 @@ export default class Monster{
     private displayPosition:{ x: number; y: number; }
     private livesCount:number
     private monsterSize = {height:30, width: 30}
+    private finishedPath = false
 
     public constructor(livesCount:number, height:number, width:number){
         this.path = new MonsterPath(height, width);
-        this.position = {x:height/2, y:width}
-        this.displayPosition = {x:height/2, y:width}
+        this.position = {x:width, y:height/2}
+        this.displayPosition = {x:width, y:height/2}
         this.livesCount = livesCount;
     }
 
@@ -22,22 +23,28 @@ export default class Monster{
         ctx.stroke()
     }
 
-    public update(){
-        const speed:number = 100 //pixels per second
-        const frameRate:number = 50 // frames per second
+    public update():boolean{
+        const speed:number = 10 //pixels per second
+        const frameRate:number = 1000 // frames per second
         // moving in a straight lines vertically to the left.
-        this.position = {x: this.position.x-speed/frameRate, y:this.position.y}
-        
+        this.position = {x: this.position.x-(speed/frameRate), y:this.position.y}
         // The display position is the position for the top-left corner so when used to print to the canvas the monster's center would be in position
-        const yDisplay:number = this.position.x - this.monsterSize.width / 2
-        const xDisplay:number = this.position.y - this.monsterSize.height / 2
+        const xDisplay:number = this.position.x - (this.monsterSize.width / 2)
+        const yDisplay:number = this.position.y - (this.monsterSize.height / 2)
         this.displayPosition = {x: xDisplay, y: yDisplay}
         if(this.displayPosition.x <= 0){
             this.decreaseHP()
+            this.finishedPath = true;
+            return false;
         }
+        return true;
     }
 
     public decreaseHP():void{
         this.livesCount = this.livesCount - 1;
+    }
+
+    public isPathFinished():boolean{
+        return this.finishedPath;
     }
 }

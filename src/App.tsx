@@ -5,10 +5,13 @@ import FireTower from './assets/FireTower'
 import IceTower from './assets/IceTower'
 import Canvas from "./Components/Canvas"
 import PlayedTower from './assets/PlayedTower'
+import Monster from './util/Monster'
 
     
 
 function App() {
+
+  const [framesUntilNextWave, setFrames] = useState<number>(250)
 
   const height = 500
   const width = 700
@@ -21,17 +24,23 @@ function App() {
   const [gameStarted, setStart] = useState<boolean>(false)
   const [gold, setGold] = useState<number>(500)
   const [pickedTower, setPickedTower] = useState<Tower>(towers[0])
-  const [framesUntilNextWave, setTime] = useState<number>(250)
   const [playerLevel, setLevel] = useState<number>(1)
   const [currentAlignment, setCurrentAlignment] = useState("center");
   const [playedTowers, setPlayedTowers] = useState<PlayedTower[]>([])
+  const [aliveMonsters, setAliveMonsters] = useState<Monster[]>([new Monster(1, height, width)])
+
   
   const [time, setTime2] = useState(Date.now());
 
   useEffect(() => {
-    const interval = setInterval(() => setTime2(Date.now()), 5000);
+    const interval = setInterval(() => setTime2(Date.now()), 1000);
     const ctx = canvasRef.current.getContext('2d');
-    ctx.reset()
+    clearBoard(ctx)
+    if(framesUntilNextWave-1 == 0){
+      setFrames(250)
+    } else {
+      setFrames(framesUntilNextWave-1)
+    }
     drawNextFrame(ctx)
     return () => {
       clearInterval(interval);
@@ -41,12 +50,34 @@ function App() {
   const canvasRef = useRef(null)
   const ctxRef = useRef(null)
 
+  function clearBoard(ctx:CanvasRenderingContext2D){
+    ctx.clearRect(0,0, width, height);
+  }
+  
+
   function drawNextFrame(ctx:CanvasRenderingContext2D){
     if(playedTowers.length != 0){
-      playedTowers.forEach(element => {
-        element.draw(ctx)
+      playedTowers.forEach(tower => {
+        tower.draw(ctx)
       });
     }
+    console.log(aliveMonsters.length)
+    if(aliveMonsters.length != 0){
+      let checkMonster = false;
+      aliveMonsters.forEach(monster => {
+        if(monster.update()){
+          monster.display(ctx)
+        } else {
+          checkMonster = true;
+        }
+      });
+      if(checkMonster){
+        setAliveMonsters(aliveMonsters.filter((monster) => {
+          !monster.isPathFinished()
+        }))
+      }
+    }
+
   }
 
   useEffect(() => {
@@ -70,10 +101,7 @@ function App() {
       } else if (gold >= pickedTower.getCost()){
         const ctx = canvasRef.current.getContext('2d');
         setGold(gold-pickedTower.getCost())
-        console.log("I am here")
         setPlayedTowers([...playedTowers, new PlayedTower(pickedTower, coordinates)])
-        console.log(playedTowers.length)
-        //pickedTower.draw(ctx,coordinates)
     }
   }
 
@@ -99,7 +127,7 @@ function App() {
       The game is {gameStarted ? ("") : ("NOT")} started.
     </p>
       <p>
-        Time until next wave = {framesUntilNextWave/50} seconds.
+        Time until next wave = {Math.round(framesUntilNextWave/50)} seconds.
       </p>
       <p>
         Current gold = {gold}.

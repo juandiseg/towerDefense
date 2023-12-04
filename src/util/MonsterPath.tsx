@@ -3,7 +3,7 @@ export default class MonsterPath{
     private end:{x:number, y:number}
 
     public constructor(height:number, width:number){
-        this.beginning = {x: height/2, y: width}
-        this.end = {x: height/2, y: 0}
+        this.beginning = {x: width, y: height/2}
+        this.end = {x: 0, y: height/2}
     }
 }

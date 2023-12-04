@@ -2,20 +2,24 @@ import Tower from "./Tower";
 
 export default class FireTower extends Tower{
 
+    private towerWidth = 100;
+    private towerHeight = 160;
+
     public constructor(){
         super("Fire Tower", 100);
     }
 
-    draw(ctx:any, point:any) : void{
-        const towerWidth = 50;
-        const towerHeight = 80;
+    draw(ctx:CanvasRenderingContext2D, point:any) : void{
         if(point != null){
             ctx.beginPath();
-            ctx.rect(point.x - towerWidth/2,point.y - towerHeight/2, towerWidth*2, towerHeight*2)
+            ctx.rect(point.x - this.towerWidth/2,point.y - this.towerHeight/2, this.towerWidth, this.towerHeight)
             ctx.stroke()
         } else {
             console.log("point not possible")
         }
     }
     
+    getDimensions(): { height: number, width: number } {
+        return {height: this.towerHeight, width:this.towerWidth}
+    }
 }

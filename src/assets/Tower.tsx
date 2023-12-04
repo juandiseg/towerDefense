@@ -24,7 +24,9 @@ export default abstract class Tower{
         return false
     }
 
-    abstract draw(ctx:any, point:any) : void;
+    abstract getDimensions() : {height:number,width:number};
+
+    abstract draw(ctx:CanvasRenderingContext2D, point:any) : void;
 }
 
 

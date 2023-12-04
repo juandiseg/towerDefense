@@ -4,6 +4,7 @@ import RegularTower from "./assets/RegularTower"
 import FireTower from './assets/FireTower'
 import IceTower from './assets/IceTower'
 import Canvas from "./Components/Canvas"
+import PlayedTower from './assets/PlayedTower'
 
     
 
@@ -23,18 +24,45 @@ function App() {
   const [framesUntilNextWave, setTime] = useState<number>(250)
   const [playerLevel, setLevel] = useState<number>(1)
   const [currentAlignment, setCurrentAlignment] = useState("center");
-  const [playedTowers, setPlayedTowers] = useState<Tower[]>();
+  const [playedTowers, setPlayedTowers] = useState<PlayedTower[]>([])
+  
+  const [time, setTime2] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime2(Date.now()), 5000);
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.reset()
+    drawNextFrame(ctx)
+    return () => {
+      clearInterval(interval);
+    };
+  });
 
   const canvasRef = useRef(null)
   const ctxRef = useRef(null)
 
+  function drawNextFrame(ctx:CanvasRenderingContext2D){
+    if(playedTowers.length != 0){
+      playedTowers.forEach(element => {
+        element.draw(ctx)
+      });
+    }
+  }
+
   useEffect(() => {
     const canvas = canvasRef.current; 
     const ctx = canvas.getContext("2d"); 
-    ctxRef.current = ctx; 
-  }, [])
+    ctxRef.current = ctx;
+  },[])
 
-
+/*
+  useEffect(() => {
+    const canvasRef = useRef(null)
+    const canvas = canvasRef.current; 
+    const ctx = canvas.getContext("2d"); 
+    ctxRef.current = ctx;
+  })
+*/
   const clickListener = (e) => {
       const coordinates = computePointInCanvas(e.clientX, e.clientY)
       if(coordinates == null){
@@ -42,7 +70,10 @@ function App() {
       } else if (gold >= pickedTower.getCost()){
         const ctx = canvasRef.current.getContext('2d');
         setGold(gold-pickedTower.getCost())
-        pickedTower.draw(ctx,coordinates)
+        console.log("I am here")
+        setPlayedTowers([...playedTowers, new PlayedTower(pickedTower, coordinates)])
+        console.log(playedTowers.length)
+        //pickedTower.draw(ctx,coordinates)
     }
   }
 
@@ -85,8 +116,6 @@ function App() {
       {Canvas(clickListener, canvasRef, width, height)}
       </>
       )
-
-
 
   function selectedTower(index:number){
     if(pickedTower?.equals(towers[index])){

@@ -1,3 +1,5 @@
+import Monster from "../util/Monster";
+import Shot from "../util/Shot";
 import Tower from "./Tower";
 
 export default class FireTower extends Tower{
@@ -6,7 +8,7 @@ export default class FireTower extends Tower{
     private towerHeight = 160;
 
     public constructor(){
-        super("Fire Tower", 100);
+        super("Fire Tower", 100, 50);
     }
 
     draw(ctx:CanvasRenderingContext2D, point:any) : void{
@@ -21,5 +23,9 @@ export default class FireTower extends Tower{
     
     getDimensions(): { height: number, width: number } {
         return {height: this.towerHeight, width:this.towerWidth}
+    }
+
+    generateShot(coordinates:{x:number,y:number}, target:Monster) : Shot{
+        return new Shot(coordinates, "Fire Tower", target);
     }
 }

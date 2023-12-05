@@ -1,3 +1,5 @@
+import Monster from "../util/Monster";
+import Shot from "../util/Shot";
 import Tower from "./Tower";
 
 export default class PlayedTower{
@@ -31,6 +33,14 @@ export default class PlayedTower{
         return false
     }
 
+    public reduceCooldown(){
+        this.tower.reduceCooldown();
+    }
+
+    public getCooldown(){
+        this.tower.getCooldown();
+    }
+
     public getName() : string{
         return this.tower.getName();
     }
@@ -40,6 +50,10 @@ export default class PlayedTower{
 
     public getCoordinates() : {x:number,y:number}{
         return this.coordinates;
+    }
+
+    public createShot(target:Monster) : Shot{
+        return this.tower.generateShot(this.coordinates,target);
     }
 
 }

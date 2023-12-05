@@ -1,3 +1,5 @@
+import Monster from "../util/Monster";
+import Shot from "../util/Shot";
 import Tower from "./Tower";
 
 export default class IceTower extends Tower{
@@ -6,7 +8,7 @@ export default class IceTower extends Tower{
     private towerHeight = 320;
 
     public constructor(){
-        super("Ice Tower", 200);
+        super("Ice Tower", 200, 75);
     }
 
     draw(ctx:CanvasRenderingContext2D, point:any) : void{
@@ -21,6 +23,10 @@ export default class IceTower extends Tower{
     
     getDimensions(): { height: number, width: number } {
         return {height: this.towerHeight, width:this.towerWidth}
+    }
+
+    generateShot(coordinates:{x:number,y:number}, target:Monster) : Shot{
+        return new Shot(coordinates, "Ice Tower", target);
     }
 }
 

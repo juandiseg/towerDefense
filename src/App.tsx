@@ -11,7 +11,7 @@ import Monster from './util/Monster'
 
 function App() {
 
-  const [framesUntilNextWave, setFrames] = useState<number>(250)
+  const [framesUntilNextWave, setFrames] = useState<number>(275)
 
   const height = 500
   const width = 700
@@ -28,24 +28,25 @@ function App() {
   const [currentAlignment, setCurrentAlignment] = useState("center");
   const [playedTowers, setPlayedTowers] = useState<PlayedTower[]>([])
   const [aliveMonsters, setAliveMonsters] = useState<Monster[]>([new Monster(1, height, width)])
+  const [hp, setHp] = useState<number>(10)
+  
 
   
   const [time, setTime2] = useState(Date.now());
 
   useEffect(() => {
-    const interval = setInterval(() => setTime2(Date.now()), 1000);
     const ctx = canvasRef.current.getContext('2d');
     clearBoard(ctx)
-    if(framesUntilNextWave-1 == 0){
-      setFrames(250)
+    if(framesUntilNextWave-1 <= 25){
+      setFrames(275)
     } else {
       setFrames(framesUntilNextWave-1)
     }
     drawNextFrame(ctx)
-    return () => {
-      clearInterval(interval);
-    };
-  });
+    setTimeout(function(){
+      return setTime2(Date.now());
+    },1000/50)
+  }, [time]);
 
   const canvasRef = useRef(null)
   const ctxRef = useRef(null)
@@ -53,21 +54,21 @@ function App() {
   function clearBoard(ctx:CanvasRenderingContext2D){
     ctx.clearRect(0,0, width, height);
   }
-  
 
   function drawNextFrame(ctx:CanvasRenderingContext2D){
     if(playedTowers.length != 0){
       playedTowers.forEach(tower => {
         tower.draw(ctx)
+        tower.reduceCooldown()
       });
     }
-    console.log(aliveMonsters.length)
     if(aliveMonsters.length != 0){
       let checkMonster = false;
       aliveMonsters.forEach(monster => {
         if(monster.update()){
           monster.display(ctx)
         } else {
+          setHp(hp-1)
           checkMonster = true;
         }
       });
@@ -134,6 +135,9 @@ function App() {
       </p>
       <p>
         Current level = {playerLevel}.
+      </p>
+      <p>
+        Current hp = {hp}.
       </p>
       <p>
         Current tower = {pickedTower.getName()} | {pickedTower.getCost()} Gold

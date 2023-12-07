@@ -7,7 +7,6 @@ export default class PlayedTower{
     private tower:Tower
     private coordinates:{x:number, y:number}
 
-
     public constructor(tower:Tower, coordinates:{x:number, y:number}){
         this.tower = tower;
         this.coordinates = coordinates;
@@ -37,10 +36,6 @@ export default class PlayedTower{
         this.tower.reduceCooldown();
     }
 
-    public getCooldown(){
-        this.tower.getCooldown();
-    }
-
     public getName() : string{
         return this.tower.getName();
     }
@@ -53,7 +48,27 @@ export default class PlayedTower{
     }
 
     public createShot(target:Monster) : Shot{
-        return this.tower.generateShot(this.coordinates,target);
+        this.tower.resetCooldown();
+        return this.tower.generateShot(this.coordinates, target);
+    }
+
+    public isNotInCooldown() : boolean{
+        return this.tower.getCooldown() == 0;
+    }
+
+    public isMonsterInRage(monster:Monster) : boolean{
+        const towerRange = {x:300,y:300};
+        const monsterX = monster.getCoordinates().x;
+        const monsterY = monster.getCoordinates().y;
+        let towerX = this.coordinates.x;
+        let towerY = this.coordinates.y;
+        const xRange = {x1: towerX-towerRange.x, x2:towerX+towerRange.x}
+        const yRange = {y1: towerY-towerRange.y, y2:towerY+towerRange.y}
+        if(xRange.x1 <= monsterX && xRange.x2 >= monsterX && yRange.y1 <= monsterY && yRange.y2 >= monsterY){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

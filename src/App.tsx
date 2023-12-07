@@ -6,6 +6,7 @@ import IceTower from './assets/IceTower'
 import Canvas from "./Components/Canvas"
 import PlayedTower from './assets/PlayedTower'
 import Monster from './util/Monster'
+import Shot from './util/Shot'
 
     
 
@@ -27,6 +28,8 @@ function App() {
   const [playerLevel, setLevel] = useState<number>(1)
   const [currentAlignment, setCurrentAlignment] = useState("center");
   const [playedTowers, setPlayedTowers] = useState<PlayedTower[]>([])
+  const [shots, setShot] = useState<Shot[]>([])
+
   const [aliveMonsters, setAliveMonsters] = useState<Monster[]>([new Monster(1, height, width)])
   const [hp, setHp] = useState<number>(10)
   
@@ -56,12 +59,25 @@ function App() {
   }
 
   function drawNextFrame(ctx:CanvasRenderingContext2D){
+    drawTowersAndReduceCd(ctx);
+    drawMonstersReduceHP(ctx);
+    tryToShoot();
+    drawShoots();
+    shots.forEach(shot => {
+      shot.display(ctx);
+    })
+  }
+
+  function drawTowersAndReduceCd(ctx:CanvasRenderingContext2D){
     if(playedTowers.length != 0){
       playedTowers.forEach(tower => {
         tower.draw(ctx)
         tower.reduceCooldown()
       });
     }
+  }
+
+  function drawMonstersReduceHP(ctx:CanvasRenderingContext2D){
     if(aliveMonsters.length != 0){
       let checkMonster = false;
       aliveMonsters.forEach(monster => {
@@ -78,7 +94,34 @@ function App() {
         }))
       }
     }
+  }
 
+  function tryToShoot(){
+    if(playedTowers.length != 0 || aliveMonsters.length != 0){ 
+      aliveMonsters.forEach(monster =>{
+        playedTowers.forEach(tower =>{
+          if(tower.isMonsterInRage(monster) && tower.isNotInCooldown()){
+            console.log("I tried shooting :)")
+            setShot([...shots, tower.createShot(monster)]);
+          }
+        })
+      })
+    }
+  }
+  
+  function drawShoots() : void{
+    let mustCheck = false;
+    shots.forEach(shot => {
+      shot.update()
+      if(shot.hasLanded()){
+        mustCheck = true;
+      } 
+    })
+    if(mustCheck){
+      setShot(shots.filter((shot) => {
+        return !shot.hasLanded()
+      }))
+    }
   }
 
   useEffect(() => {

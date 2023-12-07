@@ -23,6 +23,10 @@ export default class Monster{
         ctx.stroke()
     }
 
+    public getArea():{x1:number, y1:number, x2:number, y2:number}{
+        return {x1: this.displayPosition.x, y1: this.displayPosition.y, x2: this.displayPosition.x+this.monsterSize.width, y2: this.displayPosition.x+this.monsterSize.height}
+    }
+
     public update():boolean{
         // moving in a straight lines vertically to the left.
         this.position = {x: this.position.x-(this.getSpeed()), y:this.position.y}
@@ -40,6 +44,10 @@ export default class Monster{
 
     public decreaseHP():void{
         this.livesCount = this.livesCount - 1;
+    }
+
+    public getCoordinates():{x:number, y:number}{
+        return this.position;
     }
 
     public isPathFinished():boolean{

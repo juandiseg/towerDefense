@@ -12,7 +12,8 @@ import Shot from './util/Shot'
 
 function App() {
 
-  const [framesUntilNextWave, setFrames] = useState<number>(275)
+  //const [framesUntilNextWave, setFrames] = useState<number>(275)
+  const [framesUntilNextWave, setFrames] = useState<number>(100)
 
   const height = 500
   const width = 700
@@ -29,10 +30,12 @@ function App() {
   const [currentAlignment, setCurrentAlignment] = useState("center");
   const [playedTowers, setPlayedTowers] = useState<PlayedTower[]>([])
   const [shots, setShot] = useState<Shot[]>([])
-
-  const [aliveMonsters, setAliveMonsters] = useState<Monster[]>([new Monster(1, height, width)])
   const [hp, setHp] = useState<number>(10)
+  const [aliveMonsters, setAliveMonsters] = useState<Monster[]>([])
+  const [monsterTimer, setMonsterTimer] = useState<number>(0)
   
+  let wave:boolean = false;
+  let reaminingMonsters:number = 5;
 
   
   const [time, setTime2] = useState(Date.now());
@@ -40,14 +43,16 @@ function App() {
   useEffect(() => {
     const ctx = canvasRef.current.getContext('2d');
     clearBoard(ctx)
-    if(framesUntilNextWave-1 <= 25){
-      setFrames(275)
-    } else {
-      setFrames(framesUntilNextWave-1)
+    if(!wave){
+      if(framesUntilNextWave-1 <= 20){
+        wave = true;
+      } else {
+        setFrames(framesUntilNextWave-1)
+      }
     }
     drawNextFrame(ctx)
-    setTimeout(function(){
-      return setTime2(Date.now());
+    setTimeout(() => {
+      setTime2(Date.now());
     },1000/50)
   }, [time]);
 
@@ -60,12 +65,27 @@ function App() {
 
   function drawNextFrame(ctx:CanvasRenderingContext2D){
     drawTowersAndReduceCd(ctx);
+    createMonstersInWave(ctx);
     drawMonstersReduceHP(ctx);
     tryToShoot();
-    drawShoots();
-    shots.forEach(shot => {
-      shot.display(ctx);
+    drawShoots(ctx);
+    aliveMonsters.forEach((monster, index, object)=>{
+      if(monster.hasMonsterBeenKilled()){
+        object.splice(index,1);
+      }
     })
+  }
+
+  function createMonstersInWave(ctx:CanvasRenderingContext2D){
+    if(wave && reaminingMonsters != 0){
+      if(monsterTimer == 0){
+        setAliveMonsters([...aliveMonsters, new Monster(hp, height, width)])
+        reaminingMonsters = reaminingMonsters - 1;
+        setMonsterTimer(Math.round(Math.random()*100))
+      } else {
+        setMonsterTimer(monsterTimer-1)
+      }
+    }
   }
 
   function drawTowersAndReduceCd(ctx:CanvasRenderingContext2D){
@@ -80,19 +100,20 @@ function App() {
   function drawMonstersReduceHP(ctx:CanvasRenderingContext2D){
     if(aliveMonsters.length != 0){
       let checkMonster = false;
-      aliveMonsters.forEach(monster => {
+      aliveMonsters.forEach((monster, index, object) => {
         if(monster.update()){
           monster.display(ctx)
         } else {
+          object.splice(index,1);
           setHp(hp-1)
-          checkMonster = true;
+          //checkMonster = true;
         }
       });
-      if(checkMonster){
-        setAliveMonsters(aliveMonsters.filter((monster) => {
-          !monster.isPathFinished()
-        }))
-      }
+      //if(checkMonster){
+      //  setAliveMonsters(aliveMonsters.filter((monster) => {
+      //    monster.isPathFinished()
+      //  }))
+      //}
     }
   }
 
@@ -101,7 +122,6 @@ function App() {
       aliveMonsters.forEach(monster =>{
         playedTowers.forEach(tower =>{
           if(tower.isMonsterInRage(monster) && tower.isNotInCooldown()){
-            console.log("I tried shooting :)")
             setShot([...shots, tower.createShot(monster)]);
           }
         })
@@ -109,19 +129,17 @@ function App() {
     }
   }
   
-  function drawShoots() : void{
-    let mustCheck = false;
-    shots.forEach(shot => {
+  function drawShoots(ctx:CanvasRenderingContext2D) : void{
+    shots.forEach((shot, index, object) => {
       shot.update()
+      shot.display(ctx)
       if(shot.hasLanded()){
-        mustCheck = true;
-      } 
+        shot.dealDamage();
+      }
+      if(!shot.isTargetAlive()){
+        object.splice(index, 1)
+      }
     })
-    if(mustCheck){
-      setShot(shots.filter((shot) => {
-        return !shot.hasLanded()
-      }))
-    }
   }
 
   useEffect(() => {
@@ -130,14 +148,6 @@ function App() {
     ctxRef.current = ctx;
   },[])
 
-/*
-  useEffect(() => {
-    const canvasRef = useRef(null)
-    const canvas = canvasRef.current; 
-    const ctx = canvas.getContext("2d"); 
-    ctxRef.current = ctx;
-  })
-*/
   const clickListener = (e) => {
       const coordinates = computePointInCanvas(e.clientX, e.clientY)
       if(coordinates == null){

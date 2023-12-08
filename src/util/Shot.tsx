@@ -45,8 +45,15 @@ export default class Shot{
     }
 
     public hasLanded():boolean{
-        console.log(this.shotHasLanded)
         return this.shotHasLanded;
+    }
+
+    public dealDamage():void{
+        this.goal.receiveDamage(this.dmg);
+    }
+
+    public isTargetAlive():boolean{
+        return !this.goal.hasMonsterBeenKilled()
     }
 
     private calculateMoveDirection(ratio:{x:number, y:number}):{x:number, y:number}{

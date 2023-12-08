@@ -6,6 +6,8 @@ export default class PlayedTower{
 
     private tower:Tower
     private coordinates:{x:number, y:number}
+    private currentCooldown:number = 0;
+    private cooldown:number = 50/2;
 
     public constructor(tower:Tower, coordinates:{x:number, y:number}){
         this.tower = tower;
@@ -32,10 +34,6 @@ export default class PlayedTower{
         return false
     }
 
-    public reduceCooldown(){
-        this.tower.reduceCooldown();
-    }
-
     public getName() : string{
         return this.tower.getName();
     }
@@ -47,13 +45,24 @@ export default class PlayedTower{
         return this.coordinates;
     }
 
+    
+    public reduceCooldown():void{
+        if(this.currentCooldown != 0){
+            this.currentCooldown = this.currentCooldown - 1;
+        }
+    }
+
+    public resetCooldown():void{
+        this.currentCooldown = this.cooldown;
+    }
+
     public createShot(target:Monster) : Shot{
-        this.tower.resetCooldown();
+        this.resetCooldown();
         return this.tower.generateShot(this.coordinates, target);
     }
 
     public isNotInCooldown() : boolean{
-        return this.tower.getCooldown() == 0;
+        return this.currentCooldown == 0;
     }
 
     public isMonsterInRage(monster:Monster) : boolean{

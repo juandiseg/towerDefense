@@ -5,8 +5,10 @@ export default class Monster{
     private position:{x:number, y:number}
     private displayPosition:{ x: number; y: number; }
     private livesCount:number
+    private hp:number = 50;
     private monsterSize = {height:30, width: 30}
     private finishedPath = false
+    private beenKilled = false
 
     public constructor(livesCount:number, height:number, width:number){
         this.path = new MonsterPath(height, width);
@@ -26,6 +28,20 @@ export default class Monster{
     public getArea():{x1:number, y1:number, x2:number, y2:number}{
         return {x1: this.displayPosition.x, y1: this.displayPosition.y, x2: this.displayPosition.x+this.monsterSize.width, y2: this.displayPosition.x+this.monsterSize.height}
     }
+    public receiveDamage(damage:number):void{
+        console.log("HEALTH : " + this.hp)
+        console.log("DAMAGE : " + damage)
+
+        this.hp = this.hp - damage;
+        if(this.hp <= 0){
+            this.beenKilled = true;
+        }
+    }
+
+    public hasMonsterBeenKilled():boolean{
+        return this.beenKilled || this.isPathFinished();
+    }
+
 
     public update():boolean{
         // moving in a straight lines vertically to the left.

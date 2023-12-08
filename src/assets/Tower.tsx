@@ -4,14 +4,10 @@ import Shot from "../util/Shot";
 export default abstract class Tower{
     private name:string
     private cost:number
-    private cooldown:number
-    private currentCooldown:number
 
-    public constructor(name:string, cost:number, cooldown:number){
+    public constructor(name:string, cost:number){
         this.name = name;
         this.cost = cost;
-        this.cooldown = cooldown;
-        this.currentCooldown = 0;
     }
 
     public getName() : string{
@@ -19,19 +15,6 @@ export default abstract class Tower{
     }
     public getCost() : number{
         return this.cost;
-    }
-
-    public getCooldown() : number{
-        return this.currentCooldown;
-    }
-    public reduceCooldown():void{
-        if(this.currentCooldown != 0){
-            this.currentCooldown = this.currentCooldown - 1;
-        }
-    }
-
-    public resetCooldown():void{
-        this.currentCooldown = this.cooldown;
     }
 
     public equals(tower: any){

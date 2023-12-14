@@ -7,6 +7,8 @@ import Canvas from "./Components/Canvas"
 import PlayedTower from './assets/PlayedTower'
 import Monster from './util/Monster'
 import Shot from './util/Shot'
+import ShotWrapper from './ShotWrapper'
+import MonsterWrapper from './MonsterWrapper'
 
     
 
@@ -39,11 +41,11 @@ function App() {
   const [pickedTower, setPickedTower] = useState<Tower>(towers[0])
   const [playerLevel, setLevel] = useState<number>(1)
   const [playedTowers, setPlayedTowers] = useState<PlayedTower[]>([])
-  const [shots, setShot] = useState<Shot[]>([])
+  const [shots, setShot] = useState<ShotWrapper>(new ShotWrapper())
 
   
   const [hp, setHp] = useState<number>(10)
-  const [aliveMonsters, setAliveMonsters] = useState<Monster[]>([])
+  const [aliveMonsters, setAliveMonsters] = useState<MonsterWrapper>(new MonsterWrapper())
   const [monsterTimer, setMonsterTimer] = useState<number>(0)
 
   
@@ -78,19 +80,29 @@ function App() {
     ctx.clearRect(0,0, width, height);
   }
 
+  function removeUnnecessary():void{
+    const reducedMonsters = aliveMonsters.getMonsters().filter((monster)=>{
+      return !(monster.isPathFinished()||monster.monsterDeadOrOffScreen())
+    })
+    aliveMonsters.setMonsters(reducedMonsters);
+    setAliveMonsters(aliveMonsters);
+  }
+
   function drawNextFrame(ctx:CanvasRenderingContext2D){
+    removeUnnecessary();
     drawBackground(ctx);
     drawTowersAndReduceCd(ctx);
     createMonstersInWave();
     drawMonstersReduceHP(ctx);
     tryToShoot();
     drawShoots(ctx);
-    aliveMonsters.forEach((monster, index, object)=>{
+    const newMonsters = aliveMonsters.getMonsters().filter((monster)=>{
       if(monster.monsterDeadOrOffScreen()){
-        object.splice(index,1);
+        return false;
       }
+      return true;
     })
-    if(aliveMonsters.length == 0 && roundMonstersLeft <= 0){
+    if(aliveMonsters.getMonsters().length == 0 && roundMonstersLeft <= 0){
       setFrames(50*5+22);
     }
   }
@@ -114,9 +126,10 @@ function App() {
       if(monsterTimer != 0){
         setMonsterTimer(monsterTimer-1)
       } else {
-        setAliveMonsters([...aliveMonsters, new Monster(hp, height, width, 2)])
+        aliveMonsters.addMonster(new Monster(hp, height, width, 2));
+        setAliveMonsters(aliveMonsters);
         setRoundMonstersLeft(roundMonstersLeft - 1);
-        setMonsterTimer(Math.round(Math.random()*100))
+        setMonsterTimer(Math.round(Math.random()*10))
       }
     }
   }
@@ -129,81 +142,61 @@ function App() {
   }
 
   function drawMonstersReduceHP(ctx:CanvasRenderingContext2D){
-    let adaptableLength = aliveMonsters.length
-    for(let m = 0; m < adaptableLength; m++){
-      if(aliveMonsters[m].update()){
-        aliveMonsters[m].display(ctx)
+    
+    const newMonsters = aliveMonsters.getMonsters().filter((monster) =>{
+      if(monster.update()){
+        monster.display(ctx);
+        return true;
       } else {
-        aliveMonsters.splice(m,1)
-        adaptableLength = adaptableLength-1;
         setHp(hp-1)
+        return false;
       }
-      if(roundMonstersLeft <= 0 && adaptableLength == 0){
+    })
+    aliveMonsters.setMonsters(newMonsters)
+    setAliveMonsters(aliveMonsters)
+    if(roundMonstersLeft <= 0){
         wave = false;
-      }
     }
-
   }
 
   function tryToShoot(){
-    if(playedTowers.length != 0 || aliveMonsters.length != 0){ 
-      for(let m = 0; m< aliveMonsters.length; m++){
-        for(let t = 0; t < playedTowers.length; t++){
-          if(playedTowers[t].isMonsterInRage(aliveMonsters[m]) && playedTowers[t].isNotInCooldown()){
-            if(aliveMonsters[m].hasTargetedLeftHP()){
-              let tempShot = playedTowers[t].createShot(aliveMonsters[m]);
-              if(tempShot.getShotPath().isShotPathViable()){
-                setShot([...shots, tempShot]);
-                playedTowers[t].resetCooldown();
+    const newShots:Shot[] = []
+    if(playedTowers.length != 0 || aliveMonsters.getMonsters().length != 0){
+      aliveMonsters.getMonsters().forEach((monster)=>{
+          playedTowers.forEach((tower)=>{
+            if(tower.isMonsterInRage(monster) && tower.isNotInCooldown()){
+              if(monster.hasTargetedLeftHP()){
+                let tempShot = tower.createShot(monster);
+                if(tempShot.getShotPath().isShotPathViable()){
+                  tower.resetCooldown();
+                  newShots.push(tempShot)
+                }
               }
             }
-          }
-        }
-      }
-
-
-/*       aliveMonsters.forEach(monster =>{
-        playedTowers.forEach(tower =>{
-          if(tower.isMonsterInRage(monster) && tower.isNotInCooldown()){
-            if(monster.hasTargetedLeftHP()){
-              setShot([...shots, tower.createShot(monster)]);
-            }
-          }
         })
-      }) */
+      })
+    }
+    if(newShots.length != 0){
+      shots.addShots(newShots)
     }
   }
   
   function drawShoots(ctx:CanvasRenderingContext2D) : void{
-    let arrLen = shots.length
-    for(let i = 0; i <arrLen; i++){
-      let shot = shots[i]
+    let arrLen = shots.getShots().length
+    const newShots = shots.getShots().filter((shot)=>{
       shot.update()
+      shot.display(ctx)
       if(shot.isShotOfScreen()){
-        shots.splice(i, 1)
-        arrLen--;
-      } else {
-        shot.display(ctx)
-        if(shot.hasLanded() || shot.targetIsDead()){
-          shot.dealDamage();
-          shots.splice(i, 1)
-          arrLen--;
-        }
+        return false;
+      } else if (shot.hasLanded() || shot.targetIsDead()){
+        return false;
       }
-    }
-    
-/*     shots.forEach((shot, index, object) => {
-      shot.update()
-      if(shot.isShotOfScreen()){
-        object.splice(index, 1)
-      } else {
-        shot.display(ctx)
-        if(shot.hasLanded()){
-          shot.dealDamage();
-          object.splice(index, 1)
-        }
-      }
-    }) */
+      return true;
+    })
+
+    shots.setShots(newShots);
+    setShot(shots);
+
   }
 
   useEffect(() => {

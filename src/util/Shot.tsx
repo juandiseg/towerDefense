@@ -34,7 +34,10 @@ export default abstract class Shot{
         this.time++;
         this.position = this.shotPath.calculatePosition(this.time);
         this.displayPosition = this.shotPath.calculateDisplayPosition(this.position, this.shotSize);
-        this.checkTargetHit()
+        this.checkTargetHit();
+        if(this.shotHasLanded){
+            this.dealDamage();
+        }
     }
 
     private checkTargetHit():void{

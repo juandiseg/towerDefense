@@ -6,6 +6,7 @@ export default class ShotPath{
     private velocityVector!:{ x: number; y: number}
     private pathFinishedFlag:boolean = false
     private timeCollition:number;
+    private pointViable:boolean = true;
 
     // Velocity is pixels per frame.
     public constructor(position:{x:number, y:number}, goal:Monster, velocity:number){
@@ -19,11 +20,18 @@ export default class ShotPath{
             const distanceToCover = {x:(this.end.x - this.beginning.x), y: (this.end.y - this.beginning.y)};
             const velocityNeeded = {x: distanceToCover.x/i, y: distanceToCover.y/i}
             if(Math.abs(velocityNeeded.x) + Math.abs(velocityNeeded.y) <= velocity){
+                if(this.end.x <= 15){
+                    this.pointViable = false;
+                }
                 this.velocityVector = velocityNeeded;
                 collitionPoint = true;
             } 
         }
         this.timeCollition = i;
+    }
+
+    public isShotPathViable():boolean{
+        return this.pointViable;
     }
 
     public calculatePosition(time:number):{x:number, y:number}{

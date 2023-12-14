@@ -65,7 +65,7 @@ export default class Monster{
     public update():boolean{
         this.time++;
         // moving in a straight lines vertically to the left.
-        this.position = this.path.calculatePosition(this.time);
+        this.position = this.path.calculatePosition(this.time, true);
         // The display position is the position for the top-left corner so when used to print to the canvas the monster's center would be in position
         this.displayPosition = this.path.calculateDisplayPosition(this.position, this.monsterSize)
         if(this.path.isPathFinished()){
@@ -76,7 +76,7 @@ export default class Monster{
     }
 
     public getPositionAtSurplusTime(i:number):{x:number,y:number}{
-        return this.path.calculatePosition(i);
+        return this.path.calculatePosition(i, false);
     }
 
     public getInitialTime():number{

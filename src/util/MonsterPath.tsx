@@ -20,15 +20,15 @@ export default class MonsterPath{
             this.velocityVector = {x:distanceToCover.x/maxNumberFrames.x, y: distanceToCover.y/maxNumberFrames.y};
         }
         if(distanceToCover.x/this.velocityVector.x != 0){
-            this.timeCollition = distanceToCover.x/this.velocityVector.x;
+            this.timeCollition = Math.round(Math.abs(distanceToCover.x/this.velocityVector.x));
         } else {
-            this.timeCollition = distanceToCover.y/this.velocityVector.y;
+            this.timeCollition = Math.round(Math.abs(distanceToCover.y/this.velocityVector.y));
         }
     }
 
-    public calculatePosition(time:number):{x:number, y:number}{
+    public calculatePosition(time:number, checking:boolean):{x:number, y:number}{
         let position = {x:this.beginning.x + this.velocityVector.x * time, y:this.beginning.y + this.velocityVector.y * time};
-        if(this.timeCollition == time){
+        if(checking && this.timeCollition == time){
             this.pathFinishedFlag = true;
         }
         return position; 

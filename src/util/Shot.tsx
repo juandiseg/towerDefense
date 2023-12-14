@@ -1,36 +1,33 @@
 import Monster from "./Monster";
 import ShotPath from "./ShotPath";
 
-export default class Shot{
+export default abstract class Shot{
 
-    private position:{x:number, y:number};
     private displayPosition:{x:number, y:number};
-    private shotSize = {width:5,height:5};
-    private dmg = 20;
+    private position:{x:number, y:number};
+    private shotSize:{width:number, height:number};
     private shotHasLanded = false;
     private shotPath:ShotPath;
-
     private time:number = 0;
-
-    private type:string;
     private goal:Monster;
+    private dmg:number;
 
-    public constructor(position:{x:number, y:number}, type:string, goal:Monster){
-        this.position = position;
+    public constructor(position:{x:number, y:number}, goal:Monster, shotSize:{width:number,height:number}, velocity:number, dmg:number){
+        this.shotPath = new ShotPath(position, goal, velocity);
         this.displayPosition = {x:position.x, y:position.y}
-        this.type = type;
+        this.position = position;
+        this.shotSize = shotSize;
         this.goal = goal;
-        this.shotPath = new ShotPath(position, goal, 400/50);
-        this.goal.addHPTargeted(this.dmg);
+        this.dmg = dmg;
+        if(this.shotPath.isShotPathViable()){
+            this.goal.addHPTargeted(this.dmg);
+        }
     }
 
- 
-    
-    public display(ctx:any){
-        // erase previous drawing of this monster
-        ctx.beginPath();
-        ctx.rect(this.displayPosition.x, this.displayPosition.y, this.shotSize.width, this.shotSize.height)
-        ctx.stroke()
+    public abstract display(ctx:any):void;
+
+    public dealDamage():void{
+        this.goal.receiveDamage(this.dmg);
     }
 
     public update():void{
@@ -50,11 +47,6 @@ export default class Shot{
         const yRange = this.inYRange(monsterArea, rangeShotY);
         this.shotHasLanded = xRange && yRange; 
     }
-
-    public hasLanded():boolean{
-        return this.shotHasLanded;
-    }
-
 
     private inXRange(monsterArea:{x1: number, y1: number, x2: number, y2: number}, rangeShotX:{x1:number, x2:number}):boolean{
         if(monsterArea.x1 + 5 <= rangeShotX.x1 && rangeShotX.x1 <= monsterArea.x2 - 5){
@@ -80,8 +72,12 @@ export default class Shot{
         return false;
     }
 
-    public dealDamage():void{
-        this.goal.receiveDamage(this.dmg);
+    public hasLanded():boolean{
+        return this.shotHasLanded;
+    }
+
+    public getShotPath():ShotPath{
+        return this.shotPath;
     }
 
     public isShotOfScreen():boolean{
@@ -91,6 +87,10 @@ export default class Shot{
 
     public targetIsDead():boolean{
         return this.goal.isDead();
+    }
+
+    public getDisplayPosition():{x:number,y:number}{
+        return this.displayPosition;
     }
 
 }

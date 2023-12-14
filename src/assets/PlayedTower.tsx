@@ -19,9 +19,7 @@ export default class PlayedTower{
         const width = this.tower.getDimensions().width
         const x = this.coordinates.x;
         const y = this.coordinates.y;
-        ctx.beginPath();
-        ctx.rect(x - width/2, y - height/2, width, height)
-        ctx.stroke()
+        this.tower.draw(ctx, {x:x,y:y});
     }
 
     public equals(tower: any){
@@ -56,8 +54,7 @@ export default class PlayedTower{
         this.currentCooldown = this.cooldown;
     }
 
-    public createShot(target:Monster) : Shot | null{
-        this.resetCooldown();
+    public createShot(target:Monster) : Shot{
         return this.tower.generateShot(this.coordinates, target);
     }
 

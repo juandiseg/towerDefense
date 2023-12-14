@@ -46,8 +46,6 @@ function App() {
   const [aliveMonsters, setAliveMonsters] = useState<Monster[]>([])
   const [monsterTimer, setMonsterTimer] = useState<number>(0)
 
-  const [wave2, setWave] = useState<boolean>(false)
-
   
   let wave:boolean = false;
   
@@ -118,7 +116,7 @@ function App() {
       } else {
         setAliveMonsters([...aliveMonsters, new Monster(hp, height, width, 2)])
         setRoundMonstersLeft(roundMonstersLeft - 1);
-        setMonsterTimer(Math.round(Math.random()*50))
+        setMonsterTimer(Math.round(Math.random()*100))
       }
     }
   }
@@ -131,16 +129,18 @@ function App() {
   }
 
   function drawMonstersReduceHP(ctx:CanvasRenderingContext2D){
-    aliveMonsters.forEach((monster, index, object) => {
-      if(monster.update()){
-        monster.display(ctx)
+    let adaptableLength = aliveMonsters.length
+    for(let m = 0; m < adaptableLength; m++){
+      if(aliveMonsters[m].update()){
+        aliveMonsters[m].display(ctx)
       } else {
-        object.splice(index,1);
+        aliveMonsters.splice(m,1)
+        adaptableLength = adaptableLength-1;
         setHp(hp-1)
       }
-    });
-    if(roundMonstersLeft <= 0 && aliveMonsters.length == 0){
-      wave = false;
+      if(roundMonstersLeft <= 0 && adaptableLength == 0){
+        wave = false;
+      }
     }
 
   }
@@ -152,8 +152,9 @@ function App() {
           if(playedTowers[t].isMonsterInRage(aliveMonsters[m]) && playedTowers[t].isNotInCooldown()){
             if(aliveMonsters[m].hasTargetedLeftHP()){
               let tempShot = playedTowers[t].createShot(aliveMonsters[m]);
-              if(tempShot!=null){
+              if(tempShot.getShotPath().isShotPathViable()){
                 setShot([...shots, tempShot]);
+                playedTowers[t].resetCooldown();
               }
             }
           }
@@ -214,7 +215,6 @@ function App() {
   const clickListener = (e) => {
       const coordinates = computePointInCanvas(e.clientX, e.clientY)
       if(coordinates == null){
-        console.log("You clicked outside the canvas...")
       } else if (gold >= pickedTower.getCost()){
         const ctx = canvasRef.current.getContext('2d');
         setGold(gold-pickedTower.getCost())
@@ -223,7 +223,6 @@ function App() {
         if(!wave){
           temp.draw(ctx)
         }
-        
       }
   }
 
@@ -300,10 +299,8 @@ function App() {
 
   function selectedTower(index:number){
     if(pickedTower?.equals(towers[index])){
-      console.log("Already selected")
     } else {
       setPickedTower(towers[index])
-      console.log("The tower: " + towers[index].getName() + " has been selected")
     }
   }
 

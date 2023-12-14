@@ -8,7 +8,7 @@ export default class FireTower extends Tower{
     private towerHeight = 160;
 
     public constructor(){
-        super("Fire Tower", 100, 50);
+        super("Fire Tower", 100);
     }
 
     draw(ctx:CanvasRenderingContext2D, point:any) : void{

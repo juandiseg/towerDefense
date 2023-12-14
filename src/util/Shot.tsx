@@ -1,13 +1,16 @@
 import Monster from "./Monster";
+import ShotPath from "./ShotPath";
 
 export default class Shot{
 
     private position:{x:number, y:number};
     private displayPosition:{x:number, y:number};
     private shotSize = {width:5,height:5};
-    private speed = 400/50;
     private dmg = 20;
     private shotHasLanded = false;
+    private shotPath:ShotPath;
+
+    private time:number = 0;
 
     private type:string;
     private goal:Monster;
@@ -17,8 +20,12 @@ export default class Shot{
         this.displayPosition = {x:position.x, y:position.y}
         this.type = type;
         this.goal = goal;
+        this.shotPath = new ShotPath(position, goal, 400/50);
+        this.goal.addHPTargeted(this.dmg);
     }
 
+ 
+    
     public display(ctx:any){
         // erase previous drawing of this monster
         ctx.beginPath();
@@ -26,76 +33,64 @@ export default class Shot{
         ctx.stroke()
     }
 
-    public update(){
-        // UPDATE REAL POSITION
-        const ratio = this.getRatio()
-        this.position = this.calculateMoveDirection(ratio)
+    public update():void{
+        this.time++;
+        this.position = this.shotPath.calculatePosition(this.time);
+        this.displayPosition = this.shotPath.calculateDisplayPosition(this.position, this.shotSize);
+        this.checkTargetHit()
+    }
 
-        //UPDATE DISPLAY POSITION
-        const xDisplay:number = this.position.x - (this.shotSize.width / 2)
-        const yDisplay:number = this.position.y - (this.shotSize.height / 2)
-        this.displayPosition = {x: xDisplay, y: yDisplay}
+    private checkTargetHit():void{
+        const position = this.displayPosition
+        const monsterArea = this.goal.getArea();
+        const rangeShotX = {x1:position.x, x2:position.x + this.shotSize.width}
+        const rangeShotY = {y1:position.y, y2:position.y + this.shotSize.height}
 
-        //if(this.displayPosition.x <= 0){
-        //    this.decreaseHP()
-        //    this.finishedPath = true;
-        //    return false;
-        //}
-        return true;
+        const xRange = this.inXRange(monsterArea, rangeShotX);
+        const yRange = this.inYRange(monsterArea, rangeShotY);
+        this.shotHasLanded = xRange && yRange; 
     }
 
     public hasLanded():boolean{
         return this.shotHasLanded;
     }
 
+
+    private inXRange(monsterArea:{x1: number, y1: number, x2: number, y2: number}, rangeShotX:{x1:number, x2:number}):boolean{
+        if(monsterArea.x1 + 5 <= rangeShotX.x1 && rangeShotX.x1 <= monsterArea.x2 - 5){
+            // Shot's left X is inside the monster's area
+            return true;
+        }
+        if(monsterArea.x1 + 5 <= rangeShotX.x2 && rangeShotX.x2 <= monsterArea.x2 - 5){
+            // Shot's right X is inside the monster's area
+            return true;
+        }
+        return false;
+    }
+
+    private inYRange(monsterArea:{x1: number, y1: number, x2: number, y2: number}, rangeShotY:{y1:number, y2:number}):boolean{
+        if(monsterArea.y1 + 5 <= rangeShotY.y1 && rangeShotY.y1 <= monsterArea.y2 - 5){
+            // Shot's upper Y is inside the monster's area
+            return true;
+        }
+        if(monsterArea.y1 + 5 <= rangeShotY.y2 && rangeShotY.y2 <= monsterArea.y2 - 5){
+            // Shot's down Y is inside the monster's area
+            return true;
+        }
+        return false;
+    }
+
     public dealDamage():void{
         this.goal.receiveDamage(this.dmg);
     }
 
-    public isTargetAlive():boolean{
-        return !this.goal.hasMonsterBeenKilled()
+    public isShotOfScreen():boolean{
+        const dPosition = this.displayPosition;
+        return dPosition.x < 0 || dPosition.x>700 || dPosition.y < 0 || dPosition.y > 500
     }
 
-    private calculateMoveDirection(ratio:{x:number, y:number}):{x:number, y:number}{
-        let newX:number;
-        let newY:number;
-        if(this.goal.getCoordinates().x > this.position.x){
-            newX = this.position.x + ratio.x*this.speed;
-        } else {
-            newX = this.position.x - ratio.x*this.speed;
-        }
-        if(this.goal.getCoordinates().y > this.position.y){
-            newY = this.position.y + ratio.y*this.speed;
-        } else {
-            newY = this.position.y - ratio.y*this.speed;
-        }
-
-        // CHECK IF SHOT HAS LANDED       
-        const monsterArea = this.goal.getArea();
-        const rangeShotX = {x1:newX-this.shotSize.width/2, x2:newX+this.shotSize.width/2}
-        const rangeShotY = {y1:newY-this.shotSize.height/2, y2:newY+this.shotSize.height/2}
-
-        if(monsterArea.x1 <= rangeShotX.x2 && monsterArea.x2 >= rangeShotX.x1 && monsterArea.y1 <= rangeShotY.y2 && monsterArea.y2 >= rangeShotY.y1){
-            this.shotHasLanded = true;
-        }
-
-        return {x:newX, y:newY};
-    }
-
-    private getRatio(): {x:number, y:number}{
-        const monsterX = this.goal.getCoordinates().x
-        const shotX = this.displayPosition.x
-        const differenceX = Math.abs(monsterX - shotX)
-        
-        const monsterY = this.goal.getCoordinates().y
-        const shotY = this.displayPosition.x
-        const differenceY = Math.abs(monsterY - shotY)
-
-        if(differenceX > differenceY){
-            return {x: 1,y: differenceY/differenceX}
-        } else {
-            return {x: differenceX/differenceY,y: 1}
-        }
+    public targetIsDead():boolean{
+        return this.goal.isDead();
     }
 
 }

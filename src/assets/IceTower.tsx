@@ -8,7 +8,7 @@ export default class IceTower extends Tower{
     private towerHeight = 320;
 
     public constructor(){
-        super("Ice Tower", 200, 75);
+        super("Ice Tower", 200);
     }
 
     draw(ctx:CanvasRenderingContext2D, point:any) : void{

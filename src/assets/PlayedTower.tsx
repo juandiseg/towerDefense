@@ -56,7 +56,7 @@ export default class PlayedTower{
         this.currentCooldown = this.cooldown;
     }
 
-    public createShot(target:Monster) : Shot{
+    public createShot(target:Monster) : Shot | null{
         this.resetCooldown();
         return this.tower.generateShot(this.coordinates, target);
     }
@@ -64,6 +64,7 @@ export default class PlayedTower{
     public isNotInCooldown() : boolean{
         return this.currentCooldown == 0;
     }
+
 
     public isMonsterInRage(monster:Monster) : boolean{
         const towerRange = {x:300,y:300};

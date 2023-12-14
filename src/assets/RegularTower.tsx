@@ -1,5 +1,6 @@
 import Monster from "../util/Monster";
 import Shot from "../util/Shot";
+import ShotPath from "../util/ShotPath";
 import Tower from "./Tower";
 
 export default class RegularTower extends Tower{
@@ -8,11 +9,10 @@ export default class RegularTower extends Tower{
     private towerHeight = 80;
 
     public constructor(){
-        super("Regular Tower", 50, 25);
+        super("Regular Tower", 50);
     }
 
     draw(ctx:CanvasRenderingContext2D, point:any) : void{
-        
         if(point != null){
             ctx.beginPath();
             ctx.rect(point.x - this.towerWidth/2, point.y - this.towerHeight/2, this.towerWidth, this.towerHeight)

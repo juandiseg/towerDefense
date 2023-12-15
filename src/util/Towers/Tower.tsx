@@ -1,5 +1,5 @@
-import Monster from "../util/Monster";
-import Shot from "../util/Shooting/Shot";
+import Monster from "../Monster/Monster";
+import Shot from "../Shooting/Shot";
 
 export default abstract class Tower{
     private cooldown:number;
@@ -8,13 +8,25 @@ export default abstract class Tower{
     private towerHeight;
     private towerWidth;
 
-
     public constructor(name:string, dimension:{h:number, w:number}, cost:number, cooldown:number){
         this.name = name;
         this.cost = cost;
         this.cooldown = cooldown;
         this.towerHeight = dimension.h;
         this.towerWidth = dimension.w;
+    }
+    
+    abstract draw(ctx:CanvasRenderingContext2D, point:any) : void;
+
+    abstract generateShot(coordinates:{x:number,y:number}, target:Monster) : Shot;
+
+    // @Override
+    public equals(tower: any){
+        if(tower instanceof Tower){
+            let temp = tower as Tower
+            return (temp.getName() == this.getName() && temp.getCost() == this.getCost())
+        }
+        return false
     }
 
     public getCooldown():number{
@@ -24,27 +36,15 @@ export default abstract class Tower{
     public getName() : string{
         return this.name;
     }
+
     public getCost() : number{
         return this.cost;
-    }
-
-    public equals(tower: any){
-        if(tower instanceof Tower){
-            let temp = tower as Tower
-            if(temp.getName() == this.getName() && temp.getCost() == this.getCost()){
-                return true;
-            }
-        }
-        return false
     }
 
     public getDimensions() : {height:number,width:number}{
         return {height: this.towerHeight, width:this.towerWidth}
     }
 
-    abstract draw(ctx:CanvasRenderingContext2D, point:any) : void;
-
-    abstract generateShot(coordinates:{x:number,y:number}, target:Monster) : Shot;
 }
 
 

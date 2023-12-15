@@ -1,4 +1,4 @@
-import Monster from "../Monster";
+import Monster from "../Monster/Monster";
 import Shot from "./Shot";
 
 export default class IceShot extends Shot{

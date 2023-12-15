@@ -2,27 +2,28 @@ import MonsterPath from "./MonsterPath";
 
 const ORIGINAL_HP:number = 50; 
 export default class Monster{
-    private path:MonsterPath
-    private position:{x:number, y:number}
+
     private displayPosition:{ x: number; y: number; }
-    private livesCount:number
+    private monsterSize = {height:30, width: 30}
+    private position:{x:number, y:number}
     private hp:number = ORIGINAL_HP;
     private targetedHp:number = 0;
-    private monsterSize = {height:30, width: 30}
     private beenKilled = false
+    private livesCount:number
+    private path:MonsterPath
     private time:number = 0;
     private speed:number;
 
-
     public constructor(livesCount:number, height:number, width:number, pixelsPerFrame:number){
-        const positionFactor = Math.round(Math.random()*30)
         const directionFactor = Math.round(Math.random()) * 2 - 1
+        const positionFactor = Math.round(Math.random()*30)
         const randomFactor = positionFactor*directionFactor*2
-        this.speed = pixelsPerFrame;
-        this.path = new MonsterPath(height+randomFactor, width, this.speed);
-        this.position = {x:width, y:(height+randomFactor)/2}
+        
+        this.path = new MonsterPath(height+randomFactor, width, pixelsPerFrame);
         this.displayPosition = {x:width, y:(height+randomFactor)/2}
+        this.position = {x:width, y:(height+randomFactor)/2}
         this.livesCount = livesCount;
+        this.speed = pixelsPerFrame;
     }
 
     public display(ctx:CanvasRenderingContext2D){
@@ -116,12 +117,8 @@ export default class Monster{
         this.targetedHp = this.targetedHp + damage;
     }
 
-    public hasTargetedLeftHP():boolean{
+    public hasTargetedHPLeft():boolean{
         return this.targetedHp < ORIGINAL_HP;
-    }
-
-    public wasMonsterKilled():boolean{
-        return this.beenKilled
     }
 
     public isDead():boolean{

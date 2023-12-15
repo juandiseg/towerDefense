@@ -1,4 +1,4 @@
-import Monster from "../Monster";
+import Monster from "../Monster/Monster";
 import ShotPath from "./ShotPath";
 
 export default abstract class Shot{
@@ -33,7 +33,7 @@ export default abstract class Shot{
 
     public update():void{
         this.time++;
-        this.position = this.shotPath.calculatePosition(this.time, true);
+        this.position = this.shotPath.calculatePosition(this.time);
         this.displayPosition = this.shotPath.calculateDisplayPosition(this.position, this.shotSize);
         this.checkTargetHit();
         if(this.shotHasLanded){

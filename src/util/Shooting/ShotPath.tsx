@@ -1,4 +1,4 @@
-import Monster from "../Monster"
+import Monster from "../Monster/Monster"
 
 export default class ShotPath {
     private beginning:{x:number, y:number}

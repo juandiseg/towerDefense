@@ -1,4 +1,4 @@
-import Monster from "../Monster";
+import Monster from "../Monster/Monster";
 import Shot from "./Shot";
 
 export default class FireShot extends Shot{
@@ -6,7 +6,7 @@ export default class FireShot extends Shot{
     private size = {width:5, height:5};
 
     public constructor(position:{x:number, y:number}, goal:Monster){
-        super(position, goal, {width:8, height:8}, 4, 160)
+        super(position, goal, {width:8, height:8}, 4, 320)
     }
 
     public display(ctx:CanvasRenderingContext2D){

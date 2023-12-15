@@ -1,13 +1,24 @@
 import Monster from "../util/Monster";
-import Shot from "../util/Shot";
+import Shot from "../util/Shooting/Shot";
 
 export default abstract class Tower{
+    private cooldown:number;
     private name:string
     private cost:number
+    private towerHeight;
+    private towerWidth;
 
-    public constructor(name:string, cost:number){
+
+    public constructor(name:string, dimension:{h:number, w:number}, cost:number, cooldown:number){
         this.name = name;
         this.cost = cost;
+        this.cooldown = cooldown;
+        this.towerHeight = dimension.h;
+        this.towerWidth = dimension.w;
+    }
+
+    public getCooldown():number{
+        return this.cooldown;
     }
 
     public getName() : string{
@@ -27,7 +38,9 @@ export default abstract class Tower{
         return false
     }
 
-    abstract getDimensions() : {height:number,width:number};
+    public getDimensions() : {height:number,width:number}{
+        return {height: this.towerHeight, width:this.towerWidth}
+    }
 
     abstract draw(ctx:CanvasRenderingContext2D, point:any) : void;
 

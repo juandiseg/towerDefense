@@ -1,4 +1,4 @@
-import Monster from "./Monster";
+import Monster from "../Monster";
 import ShotPath from "./ShotPath";
 
 export default abstract class Shot{
@@ -10,6 +10,7 @@ export default abstract class Shot{
     private shotPath:ShotPath;
     private time:number = 0;
     private goal:Monster;
+
     private dmg:number;
 
     public constructor(position:{x:number, y:number}, goal:Monster, shotSize:{width:number,height:number}, velocity:number, dmg:number){
@@ -24,7 +25,7 @@ export default abstract class Shot{
         }
     }
 
-    public abstract display(ctx:any):void;
+    public abstract display(ctx:CanvasRenderingContext2D):void;
 
     public dealDamage():void{
         this.goal.receiveDamage(this.dmg);
@@ -32,7 +33,7 @@ export default abstract class Shot{
 
     public update():void{
         this.time++;
-        this.position = this.shotPath.calculatePosition(this.time);
+        this.position = this.shotPath.calculatePosition(this.time, true);
         this.displayPosition = this.shotPath.calculateDisplayPosition(this.position, this.shotSize);
         this.checkTargetHit();
         if(this.shotHasLanded){

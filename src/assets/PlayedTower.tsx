@@ -1,5 +1,5 @@
 import Monster from "../util/Monster";
-import Shot from "../util/Shot";
+import Shot from "../util/Shooting/Shot";
 import Tower from "./Tower";
 
 export default class PlayedTower{
@@ -7,10 +7,11 @@ export default class PlayedTower{
     private tower:Tower
     private coordinates:{x:number, y:number}
     private currentCooldown:number = 0;
-    private cooldown:number = 50/2;
+    private cooldown:number;
 
     public constructor(tower:Tower, coordinates:{x:number, y:number}){
         this.tower = tower;
+        this.cooldown = tower.getCooldown();
         this.coordinates = coordinates;
     }
 
@@ -22,19 +23,10 @@ export default class PlayedTower{
         this.tower.draw(ctx, {x:x,y:y});
     }
 
-    public equals(tower: any){
-        if(tower instanceof PlayedTower){
-            let temp = tower as PlayedTower
-            if(temp.getName() == this.getName() && temp.getCost() == this.getCost() && temp.getCoordinates() == this.getCoordinates()){
-                return true;
-            }
-        }
-        return false
-    }
-
     public getName() : string{
         return this.tower.getName();
     }
+    
     public getCost() : number{
         return this.tower.getCost();
     }
@@ -42,7 +34,6 @@ export default class PlayedTower{
     public getCoordinates() : {x:number,y:number}{
         return this.coordinates;
     }
-
     
     public reduceCooldown():void{
         if(this.currentCooldown != 0){
@@ -54,13 +45,15 @@ export default class PlayedTower{
         this.currentCooldown = this.cooldown;
     }
 
+    public isNotInCooldown() : boolean{
+        return this.currentCooldown == 0;
+    } 
+
+
     public createShot(target:Monster) : Shot{
         return this.tower.generateShot(this.coordinates, target);
     }
 
-    public isNotInCooldown() : boolean{
-        return this.currentCooldown == 0;
-    }
 
 
     public isMonsterInRage(monster:Monster) : boolean{

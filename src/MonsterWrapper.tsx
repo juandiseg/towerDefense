@@ -16,5 +16,4 @@ export default class MonsterWrapper{
     public addMonster(newMonster:Monster):void{
         this.monsters.push(newMonster)
     }
-
 }

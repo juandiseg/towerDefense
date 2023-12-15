@@ -1,11 +1,12 @@
-import Monster from "./Monster"
+import Monster from "../Monster"
 
-export default class ShotPath{
+export default class ShotPath {
     private beginning:{x:number, y:number}
     private end!: { x: number, y: number }
     private velocityVector!:{ x: number; y: number}
     private pathFinishedFlag:boolean = false
     private timeCollition:number;
+
     private pointViable:boolean = true;
 
     // Velocity is pixels per frame.
@@ -42,8 +43,8 @@ export default class ShotPath{
         return position; 
     }
 
-    public calculateDisplayPosition(position:{x:number, y:number}, monsterSize:{height:number, width: number}):{x:number, y:number}{
-        return {x: position.x - (monsterSize.width / 2), y: position.y - (monsterSize.height / 2)};
+    public calculateDisplayPosition(position:{x:number, y:number}, displaySize:{height:number, width: number}):{x:number, y:number}{
+        return {x: position.x - (displaySize.width / 2), y: position.y - (displaySize.height / 2)};
     }
 
     public isPathFinished():boolean{

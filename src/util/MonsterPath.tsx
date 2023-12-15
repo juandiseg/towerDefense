@@ -34,8 +34,8 @@ export default class MonsterPath{
         return position; 
     }
 
-    public calculateDisplayPosition(position:{x:number, y:number}, monsterSize:{height:number, width: number}):{x:number, y:number}{
-        return {x: position.x - (monsterSize.width / 2), y: position.y - (monsterSize.height / 2)};
+    public calculateDisplayPosition(position:{x:number, y:number}, displaySize:{height:number, width: number}):{x:number, y:number}{
+        return {x: position.x - (displaySize.width / 2), y: position.y - (displaySize.height / 2)};
     }
 
     public isPathFinished():boolean{

@@ -1,4 +1,4 @@
-import Shot from "./util/Shot";
+import Shot from "./util/Shooting/Shot";
 
 export default class ShotWrapper{
     private shots:Shot[] = []

@@ -15,11 +15,9 @@ export default class Monster{
 
 
     public constructor(livesCount:number, height:number, width:number, pixelsPerFrame:number){
-
         const positionFactor = Math.round(Math.random()*30)
         const directionFactor = Math.round(Math.random()) * 2 - 1
         const randomFactor = positionFactor*directionFactor*2
-
         this.speed = pixelsPerFrame;
         this.path = new MonsterPath(height+randomFactor, width, this.speed);
         this.position = {x:width, y:(height+randomFactor)/2}
@@ -27,12 +25,80 @@ export default class Monster{
         this.livesCount = livesCount;
     }
 
-    // Requires the canvas' context to draw on it.
-    public display(ctx:any){
-        // erase previous drawing of this monster
-        ctx.beginPath();
-        ctx.rect(this.displayPosition.x, this.displayPosition.y, this.monsterSize.width, this.monsterSize.height)
-        ctx.stroke()
+    public display(ctx:CanvasRenderingContext2D){
+
+        let topLeftX = this.displayPosition.x
+        let topLeftY = this.displayPosition.y 
+
+        ctx.fillStyle = "black"
+        //0
+        ctx.fillRect(topLeftX+14, topLeftY, 5, 1)
+        topLeftY++; //1
+        ctx.fillRect(topLeftX+12, topLeftY, 9, 1)
+        topLeftY++; //2
+        ctx.fillRect(topLeftX+11, topLeftY, 11, 1)
+        topLeftY++; //3
+        ctx.fillRect(topLeftX+10, topLeftY, 13, 1)
+
+        topLeftY++; //4
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+        topLeftY++; //5
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+        topLeftY++; //6
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+        topLeftY++; //7
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+        topLeftY++; //8
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+        topLeftY++; //9
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+
+        topLeftY++; //10
+        ctx.fillRect(topLeftX+8, topLeftY, 17, 1)
+        topLeftY++; //11
+        ctx.fillRect(topLeftX+7, topLeftY, 19, 1)
+        topLeftY++; //12
+        ctx.fillRect(topLeftX+6, topLeftY, 21, 1)
+        topLeftY++; //13
+        ctx.fillRect(topLeftX+5, topLeftY, 23, 1)
+        topLeftY++; //14
+        ctx.fillRect(topLeftX+5, topLeftY, 23, 1)
+        
+        topLeftY++; //15
+        ctx.fillRect(topLeftX+4, topLeftY, 25, 1)
+        topLeftY++; //16
+        ctx.fillRect(topLeftX+4, topLeftY, 25, 1)
+        topLeftY++; //17
+        ctx.fillRect(topLeftX+4, topLeftY, 25, 1)
+        topLeftY++; //18
+        ctx.fillRect(topLeftX+4, topLeftY, 25, 1)
+        topLeftY++; //19
+        ctx.fillRect(topLeftX+4, topLeftY, 25, 1)
+        topLeftY++; //20
+        ctx.fillRect(topLeftX+4, topLeftY, 25, 1)
+
+        topLeftY++; //21
+        ctx.fillRect(topLeftX+4, topLeftY, 4, 1)
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+        ctx.fillRect(topLeftX+24, topLeftY, 4, 1)
+
+        topLeftY++; //22
+        ctx.fillRect(topLeftX+5, topLeftY, 3, 1)
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+        ctx.fillRect(topLeftX+25, topLeftY, 3, 1)
+
+        topLeftY++; //23
+        ctx.fillRect(topLeftX+9, topLeftY, 15, 1)
+
+        topLeftY++; //24
+        ctx.fillRect(topLeftX+9, topLeftY, 6, 1)
+        ctx.fillRect(topLeftX+19, topLeftY, 6, 1)
+        topLeftY++; //25
+        ctx.fillRect(topLeftX+9, topLeftY, 6, 1)
+        ctx.fillRect(topLeftX+19, topLeftY, 6, 1)
+        topLeftY++; //26
+        ctx.fillRect(topLeftX+10, topLeftY, 4, 1)
+        ctx.fillRect(topLeftX+20, topLeftY, 4, 1)
     }
 
     public getArea():{x1:number, y1:number, x2:number, y2:number}{
@@ -54,8 +120,8 @@ export default class Monster{
         return this.targetedHp < ORIGINAL_HP;
     }
 
-    public monsterDeadOrOffScreen():boolean{
-        return this.beenKilled || this.isPathFinished();
+    public wasMonsterKilled():boolean{
+        return this.beenKilled
     }
 
     public isDead():boolean{

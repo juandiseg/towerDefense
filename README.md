@@ -1,30 +1,13 @@
-# React + TypeScript + Vite
+# Tower Defense Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a school project which was done using React + TypeScript + Vite. You can check the coursework definition document at `./CourseworkDefintion.pdf`
 
-Currently, two official plugins are available:
+##
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The purpose of the project was to get familiar with the three technologies previously mentioned, specially with React. The logic of the game depends entirely on states. Interactions trigger state updates to reflect those interactions on the screen. The game is all 'drawn' using a canvas component.
 
-## Expanding the ESLint configuration
+Please take into consideration the focus of the coursework was implementing the logic for the game, and not the graphics nor game-experience.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+##
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+You can check-out the game on the following GH page: https://juandiseg.github.io/towerDefense/
